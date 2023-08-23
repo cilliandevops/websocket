@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SSH Web Terminal</title>
+  <style>
+    #terminal-container {
+      width: 800px;
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+  <div id="terminal-container"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xterm@4.15.0/dist/xterm.js"></script>
+  <script>
+    const terminalContainer = document.getElementById('terminal-container');
+    const term = new Terminal();
+    term.open(terminalContainer);
+    const socket = new WebSocket('ws://localhost:8080'); // Change to your server URL
+
+    term.onData(data => socket.send(data));
+
+    socket.onmessage = (event) => {
+      term.write(event.data);
+    };
+
+    socket.onclose = () => {
+      term.write('\r\nConnection closed.');
+    };
+  </script>
+</body>
+</html>
